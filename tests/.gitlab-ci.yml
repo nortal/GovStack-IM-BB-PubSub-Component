@@ -1,0 +1,39 @@
+run-e2e-tests:
+  rules:
+    - if: $RUN_E2E_TESTS != "true"
+      when: manual
+      allow_failure: true
+    - if: $RUN_E2E_TESTS == "true"
+  stage: e2e-tests
+  needs:
+    - job: messaging-api-build-image
+      optional: true
+    - job: management-api-build-image
+      optional: true
+    - job: management-ui-build-image
+      optional: true
+    - job: schema-build-image
+      optional: true
+  image:
+    name: docker:git
+    pull_policy: if-not-present
+  variables:
+    TEST_FILTER_EXCLUDE: -DtestFilterExclude="XRoad"
+    COMPOSE_PROJECT_NAME: "test_${CI_COMMIT_REF_SLUG}"
+  before_script:
+    - echo "Remove any previous containers"
+    - docker compose -p $COMPOSE_PROJECT_NAME down -v --remove-orphans
+  script:
+    - echo "Start services"
+    - echo -e "$MESSAGING_API_IMAGE_NAME \n$MANAGEMENT_API_IMAGE_NAME \n$MANAGEMENT_UI_IMAGE_NAME \n$SCHEMA_IMAGE_NAME"
+    - docker compose --env-file dev/docker/docker.env -f dev/docker/docker-compose.yaml up -d
+    - echo "Running e2e test"
+    - docker compose -f tests/docker-compose.yml up --exit-code-from tests
+  after_script:
+    - docker compose -p $COMPOSE_PROJECT_NAME stop
+  artifacts:
+    when: always
+    reports:
+      junit: tests/build/test-results/test/**/TEST-*.xml
+    paths:
+      - tests/build/allure-results/

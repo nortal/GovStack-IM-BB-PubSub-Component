@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-api
+spec:
+  selector:
+    app: messaging-api
+  ports:
+    - protocol: "TCP"
+      port: 8090
+      targetPort: 8090
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-api
+spec:
+  selector:
+    matchLabels:
+      app: messaging-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: messaging-api
+    spec:
+      containers:
+        - name: messaging-api
+          image: k3d-im-bb-registry.localhost:5000/messaging-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8090

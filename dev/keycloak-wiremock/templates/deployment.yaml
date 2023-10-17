@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wiremock
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: wiremock
+  template:
+    metadata:
+      labels:
+        app: wiremock
+    spec:
+      containers:
+        - name: wiremock
+          image: "{{ .Values.wiremock.image.repository }}:{{ .Values.wiremock.image.tag }}"
+          imagePullPolicy: {{ .Values.wiremock.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.wiremock.httpPort }}
+          args:
+            - "--port"
+            - "{{ .Values.wiremock.httpPort }}"
+          volumeMounts:
+            - name: wiremock-config
+              mountPath: /home/wiremock/mappings
+      volumes:
+        - name: wiremock-config
+          configMap:
+            name: wiremock-config

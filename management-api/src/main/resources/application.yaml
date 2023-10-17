@@ -1,0 +1,20 @@
+application:
+  global:
+    time-zone: Europe/Tallinn
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/im_msg_db?currentSchema=im_msg
+    username: im_msg_usr
+    password: im_msg_pass
+    schema-name: im_msg
+
+amqphub:
+  amqp10jms:
+    remote-url: amqp://localhost:5672
+    username: admin
+    password: admin
+    pool:
+      enabled: true
+      maxConnections: 10

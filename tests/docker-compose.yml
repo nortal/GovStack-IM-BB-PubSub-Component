@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+
+  chrome:
+    image: selenium/standalone-chrome:latest
+    healthcheck:
+      test: ["CMD", "/opt/bin/check-grid.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 1
+      start_period: 60s
+    environment: #https://github.com/SeleniumHQ/docker-selenium
+      - SCREEN_WIDTH=1920
+      - SCREEN_HEIGHT=1080
+      - SCREEN_DEPTH=24
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=6
+      - SE_START_XVFB=false
+    # Should be 2GB - https://github.com/SeleniumHQ/docker-selenium#--shm-size2g
+    volumes:
+      - "/dev/shm:/dev/shm:z"
+    networks:
+      - mynetwork
+
+  tests:
+    image: gradle:8.0.2-jdk17-alpine
+    depends_on:
+      chrome:
+        condition: service_healthy
+    volumes:
+      - "../:/test:z"
+    command: "sh -c 'cd /test/tests && gradle clean test ${TEST_FILTER_INCLUDE} ${TEST_FILTER_EXCLUDE}'"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

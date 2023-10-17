@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202307211702-drop-table-subscribed-events
+      author: Stefan Cvetkovski
+      changes:
+        - dropTable:
+            tableName: subscribed_events
+
+  - changeSet:
+      id: 202307211714-alter-table-events
+      author: Stefan Cvetkovski
+      changes:
+        - renameColumn:
+            tableName: events
+            newColumnName: created_at
+            oldColumnName: published_at
+            columnDataType: timestamptz
+            remarks: the moment PubSub system processed the event
+        - dropColumn:
+            tableName: events
+            columnName: message_id
+        - setColumnRemarks:
+            tableName: events
+            columnName: correlation_id
+            columnDataType: varchar
+            remarks: Correlation ID of the event linking event messages in different queues
+
+  - changeSet:
+      id: 202307211728-create-table-published-messages
+      author: Stefan Cvetkovski
+      changes:
+        - createTable:
+            tableName: published_messages
+            remarks: record a message published to a subscriber
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_published_messages
+              - column:
+                  name: event_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: events(id)
+                    foreignKeyName: fk_published_messages_event_id
+              - column:
+                  name: subscription_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: subscriptions(id)
+                    foreignKeyName: fk_published_messages_subscription_id
+              - column:
+                  name: published_at
+                  type: timestamptz
+                  remarks: moment when a message is published to a subscriber based on an event
+                  constraints:
+                    nullable: false

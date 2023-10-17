@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/rooms-configuration.schema.json",
+  "title": "Room configuration",
+  "description": "Configuration settings of a room",
+  "type": "object",
+  "properties": {
+    "messageExpiration": {
+      "type": ["integer", "null"],
+      "description": "Duration in milliseconds after which messages should expire. If set to 'null', messages never expire."
+    },
+    "deliveryDelay": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Duration in milliseconds for delay between message delivery attempts for PUSH configuration. Can be overridden by subscriptions."
+    },
+    "deliveryDelayMultiplier": {
+      "type": "number",
+      "minimum": 1.01,
+      "description": "Multiplier by which delivery delay is increased exponentially between delivery attempts for PUSH configuration. Always rounded up with millisecond accuracy. Can be overridden by subscriptions."
+    },
+    "deliveryAttempts": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum number of delivery attempts for a message in PUSH configuration. If set to 0, redelivery will not be attempted. Can be overridden by subscriptions."
+    }
+  },
+  "required": ["messageExpiration", "deliveryDelay", "deliveryDelayMultiplier", "deliveryAttempts"]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/publish-event-request-schema.json",
+  "title": "Publish event request",
+  "description": "Data for publishing event",
+  "type": "object",
+  "properties": {
+    "eventType": {
+      "type": "string",
+      "description": "Identifies the event type"
+    },
+    "content": {
+      "type": "object",
+      "description": "The content (payload) of event"
+    }
+  },
+  "required": ["eventType", "content"]
+}

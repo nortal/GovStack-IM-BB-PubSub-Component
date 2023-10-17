@@ -1,0 +1,12 @@
+{{- if .Values.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wiremock-config
+data:
+  {{- $mappings := .Files.Glob "mappings/*" }}
+  {{- range $path, $bytes := $mappings }}
+  {{ base $path }}: |
+{{ $.Files.Get $path | indent 4 }}
+  {{- end }}
+  {{- end }}

@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202308281300-modify-unique-constraint-on-managers
+      author: Sander Aido
+      changes:
+        - dropUniqueConstraint:
+            tableName: managers
+            constraintName: uq_managers
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE managers ADD CONSTRAINT uq_managers UNIQUE NULLS NOT DISTINCT (identifier, deleted_at);
+  - changeSet:
+      id: 202308281300-modify-unique-constraint-on-publishers
+      author: Sander Aido
+      changes:
+        - dropUniqueConstraint:
+            tableName: publishers
+            constraintName: uq_publishers
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE publishers ADD CONSTRAINT uq_publishers UNIQUE NULLS NOT DISTINCT (room_id, identifier, deleted_at);
+
+  - changeSet:
+      id: 202308281300-modify-unique-constraint-on-event-types
+      author: Sander Aido
+      changes:
+        - dropUniqueConstraint:
+            tableName: event_types
+            constraintName: uq_event_types
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE event_types ADD CONSTRAINT uq_event_types UNIQUE NULLS NOT DISTINCT (room_id, identifier, deleted_at);
+
+  - changeSet:
+      id: 202308281300-modify-unique-constraint-on-event-type-versions
+      author: Sander Aido
+      changes:
+        - dropUniqueConstraint:
+            tableName: event_type_versions
+            constraintName: uq_event_type_versions
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE event_type_versions ADD CONSTRAINT uq_event_type_versions UNIQUE NULLS NOT DISTINCT (event_type_id, version, deleted_at);
+
+  - changeSet:
+      id: 202308281300-modify-unique-constraint-on-subscriptions
+      author: Sander Aido
+      changes:
+        - dropUniqueConstraint:
+            tableName: subscriptions
+            constraintName: uq_subscriptions
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE subscriptions ADD CONSTRAINT uq_subscriptions UNIQUE NULLS NOT DISTINCT (room_id, event_type_id, identifier, deleted_at);

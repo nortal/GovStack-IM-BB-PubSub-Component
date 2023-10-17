@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.0.0"
+  },
+  "inputSpec": "./openapi-definition.yaml",
+  "generatorName": "java",
+  "library": "webclient",
+  "apiPackage": "com.govstack.information_mediator.pubsub.management.xroad_admin.client.api",
+  "modelPackage": "com.govstack.information_mediator.pubsub.management.xroad_admin.client.model",
+  "configOptions": {
+    "dateLibrary": "java8"
+  },
+  "hideGenerationTimestamp": true
+}

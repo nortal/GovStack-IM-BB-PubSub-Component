@@ -1,0 +1,4 @@
+.allure/*
+.idea
+target/*
+application-local.properties

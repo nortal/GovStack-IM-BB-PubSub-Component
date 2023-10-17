@@ -1,0 +1,349 @@
+{
+  "tabs": {
+    "rooms": "Rooms list",
+    "managers": "PubSub Managers",
+    "members": "XRoad Members"
+  },
+  "membersList": {
+    "title": "Member List",
+    "header": {
+      "name": "Member Name",
+      "subsystemCode": "Subsystem Code",
+      "memberCode": "Member Code",
+      "memberClass": "Member Class",
+      "xRoadInstance": "XRoad Instance"
+    }
+  },
+  "roomsList": {
+    "title": "Rooms List",
+    "header": {
+      "name": "Room Name",
+      "managerName": "Manager Name"
+    },
+    "filterByManager": "Filter by manager",
+    "actions": {
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "terminate": "Terminate",
+      "createRoom": "Create room",
+      "createAction": {
+        "identifier": "Room identifier",
+        "managerIdentifier": "Managers identifier",
+        "messageExpiration": "Message expiration",
+        "deliveryDelay": "Delivery delay (ms)",
+        "deliveryDelayMultiplier": "Delivery delay multiplier",
+        "deliveryAttempts": "Delivery attempts",
+        "success": "Room {identifier} was successfully created"
+      },
+      "editAction": {
+        "editConfirm": "Are you sure?",
+        "success": "Room {room} was successfully edited"
+      },
+      "terminateAction": {
+        "terminateTitle": "Terminate Room",
+        "terminateConfirm": "Are you sure want to terminate room {name} ?",
+        "success": "Room {room} was successfully terminated"
+      }
+    },
+    "details": {
+      "title": "Room details",
+      "roomName": "Room Name",
+      "roomManager": "Room Manager",
+      "status": "Status",
+      "dateCreated": "Date Created",
+      "createdBy": "Created By",
+      "active": "Active"
+    }
+  },
+  "managersList": {
+    "title": "Managers List",
+    "header": {
+      "name": "Managers Name",
+      "type": "Manager Type"
+    },
+    "actions": {
+      "actions": "Actions",
+      "terminate": "Terminate",
+      "createManager": "Create Manager",
+      "createAction": {
+        "identifier": "Managers identifier",
+        "managerType": "Managers type",
+        "success": "Manager {managerId} was successfully created"
+      },
+      "terminateAction": {
+        "terminateTitle": "Terminate Manager",
+        "terminateConfirm": "Are you sure want to terminate manager {managerId} ?",
+        "success": "Manager {managerId} was successfully terminated"
+      }
+    }
+  },
+  "eventTypesList": {
+    "title": "Event Types",
+    "header":{
+      "identifier": "Event type name",
+      "versions": "Number of versions",
+      "createdBy": "Created by",
+      "createdAt": "Created at",
+      "actions": "Actions",
+      "download": "Download"
+    },
+    "actions": {
+      "add": "Add Event Type",
+      "view": "View history",
+      "upload": "Upload version",
+      "terminate": "Terminate",
+      "edit": "Edit version",
+      "download": "Download",
+      "terminateAction": {
+        "terminateTitle": "Terminate Event Type",
+        "terminateConfirm": "Are you sure want to terminate event type {eventType} ?",
+        "success": "Event type {eventType} was successfully terminated"
+      },
+      "addAction": {
+        "identifier": "Event type",
+        "versionNo": "Version No.",
+        "schema": "Schema",
+        "success": "Event type {eventType} was successfully created"
+      },
+      "viewVersions": {
+        "eventTypeVersionTitle": "Event Type {eventType} History",
+        "eventType": "Event type",
+        "versionNo": "Version No.",
+        "createdAt": "Created at"
+      },
+      "addVersionAction": {
+        "success": "Event type {eventType} version {versionNo} was successfully uploaded"
+      },
+      "updateVersionAction": {
+        "success": "Event type {eventType} version {versionNo} was successfully updated"
+      },
+      "terminateVersion": {
+        "terminateTitle": "Terminate Event Type Version",
+        "terminateConfirm": "Are you sure want to terminate event type {eventType} version {versionNo} ?",
+        "success": "Event type {eventType} version {versionNo} was successfully terminated"
+      }
+    }
+  },
+  "subscriptionsList": {
+    "title": "Subscriptions",
+    "filterByStatus": "Filter by status",
+    "header": {
+      "identifier": "Identifier",
+      "eventType": "Event type",
+      "status": "Status",
+      "method": "Method",
+      "createdAt": "Date created",
+      "actions": "Actions"
+    },
+    "details": {
+      "status": {
+        "ACTIVE": "Active",
+        "PENDING": "Pending",
+        "REJECTED": "Rejected",
+        "TERMINATED": "Terminated"
+      }
+    },
+    "actions": {
+      "approve": "Approve",
+      "approveAction": {
+        "success": "Subscription {subscriptionIdentifier} was approved"
+      },
+      "reject": "Reject",
+      "rejectAction": {
+        "rejectTitle": "Reject subscription",
+        "rejectConfirm": "Are you sure you want to reject subscription {subscriptionIdentifier} ?",
+        "success": "Subscription {subscriptionIdentifier} was rejected"
+      },
+      "details": "Details",
+      "terminate": "Terminate",
+      "terminateAction": {
+        "terminateTitle": "Terminate subscription",
+        "terminateConfirm": "Are you sure you want to terminate subscription {subscriptionIdentifier} ?",
+        "success": "Subscription {subscriptionIdentifier} was successfully terminated"
+      },
+      "detailsAction": {
+        "title": "Subscription details"
+    }
+    }
+  },
+  "subscriptionEventsList": {
+    "title": "Published events",
+    "filterByStatus": "Filter by status",
+    "header": {
+      "eventId": "Event ID",
+      "eventType": "Event type",
+      "status": "Status",
+      "isDelivered": "Is delivered",
+      "deliveryAttempts": "Attempts",
+      "createdAt": "Date created"
+    },
+    "search": {
+      "eventId": "Event ID",
+      "eventType": "Event type",
+      "createdAt": "Date created"
+    },
+    "details": {
+      "status": {
+        "PUBLISHED": "Published",
+        "UNCONSUMED": "Unconsumed",
+        "PENDING": "Pending",
+        "DELIVERED": "Delivered"
+      }
+    }
+  },
+  "publishersList": {
+    "title": "Publishers",
+    "header": {
+      "identifier": "Publisher Name",
+      "identifierType": "Publisher Type",
+      "eventIdentifier": "Event Type",
+      "status": "Status",
+      "createdAt": "Created At",
+      "createdBy": "Created By",
+      "actions": "Actions"
+    },
+    "actions": {
+      "update": "Update",
+      "terminate": "Terminate",
+      "viewConstraints": "View Event Types",
+      "add": "Add Publisher",
+      "addAction": {
+        "selectMember": "Select member",
+        "selectEventType": "Select event types",
+        "success": "Publisher {publisher} was successfully created"
+      },
+      "viewConstraintsAction": {
+        "title": "Publishers Event Types",
+        "eventIdentifier": "Event Type",
+        "createdAt": "Created At"
+      },
+      "updateAction": {
+        "updateTitle": "Update publisher",
+        "success": "Publisher {publisher} was successfully edited",
+        "atleastOne": "At least one event type is required for update the publisher"
+      },
+      "terminateAction": {
+        "terminateTitle": "Terminate Publisher",
+        "terminateConfirm": "Are you sure want to terminate publisher {publisher} ?",
+        "success": "Publisher {publisher} was successfully terminated"
+      }
+    }
+  },
+  "eventTypes": {
+    "title": "Event Types"
+  },
+  "events": {
+    "title": "Events"
+  },
+  "eventsList": {
+    "title": "Events",
+    "header": {
+      "identifier": "Event identifier",
+      "eventType": "Event type",
+      "status": "Status",
+      "createdAt": "Date created",
+      "publishedIdentifier": "Publisher",
+      "eventTypeVersion": "Type ver.",
+      "actions": "Actions"
+    },
+    "search": {
+      "eventType": "Event type",
+      "eventTypeVersion": "Version",
+      "eventPublisher": "Event publisher"
+    },
+    "actions": {
+      "details": "Details"
+    }
+  },
+  "eventDetails": {
+    "title": "Event details",
+    "event": {
+      "title": "Event",
+      "identifier": "Event Identifier",
+      "correlationId": "Correlation ID",
+      "createdAt": "Created At"
+    },
+    "eventType": {
+      "title": "Event Type",
+      "identifier": "Event Type Identifier",
+      "deletedAt": "Event Type Deleted At"
+    },
+    "eventTypeVersion": {
+      "versionNo": "Event Type Version Number",
+      "schema": "Event Type Version JSON Schema",
+      "deletedAt": "Event Type Version Deleted At"
+    },
+    "publisher": {
+      "title": "Publisher",
+      "identifier": "Publisher Identifier",
+      "identifierType": "Publisher Identifier Type",
+      "deletedAt": "Publisher Deleted At"
+    }
+  },
+  "subscriptionDetails": {
+    "title": "Subscription details",
+    "subscription": {
+      "id": "ID",
+      "identifier": "Identifier",
+      "status": "Status",
+      "method": "Method",
+      "pushUrl": "Push URL",
+      "createdAt": "Created At",
+      "createdBy": "Created By"
+    }
+  },
+  "global": {
+    "appTitle": "IM-BB PubSub Management",
+    "name": "Name"
+  },
+  "alert": {
+    "count": "Amount of same errors:",
+    "id": "ID"
+  },
+  "login": {
+    "title": "Log in",
+    "loginButton": "Log in with OAuth2",
+    "loginError": "Error occurred with OAuth redirect. Please contact system administrator."
+  },
+  "logout": {
+    "title": "Logging out...",
+    "logoutButton": "Log out"
+  },
+  "toolbar": {
+    "appName": "IM-BB PubSub Management",
+    "logout": "Logout"
+  },
+  "navigation": {
+    "backToRooms": "Go back to Rooms list"
+  },
+  "footer": {
+    "copyright": {
+      "title": "Copyright",
+      "company": "GovStack",
+      "licenceInfo": "Licence Info"
+    },
+    "software": {
+      "title": "Software",
+      "versionPrefix": "IM-BB PubSub Management"
+    }
+  },
+  "action": {
+    "cancel": "Cancel",
+    "add": "Add",
+    "save": "Save",
+    "yes": "Yes",
+    "delete": "Delete",
+    "download": "Download",
+    "upload": "Upload",
+    "restore": "Restore",
+    "close": "Close",
+    "ok": "OK"
+  },
+  "noData": {
+    "noMatches": "No items matching criteria",
+    "loading": "Loading... Please wait",
+    "noData": "No data"
+  },
+  "Close": "Close"
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/create-publisher-schema.json",
+  "title": "Create publisher request",
+  "description": "Data for creating publishers",
+  "type": "object",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "Identifies the publisher"
+    },
+    "identifierType": {
+      "type": "string",
+      "enum": ["INTERNAL", "XROAD"],
+      "description": "The identifier type"
+    },
+    "eventTypes": {
+      "type": "array",
+      "description": "Identifies the event types for the publisher",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": ["identifier", "identifierType", "eventTypes"]
+}

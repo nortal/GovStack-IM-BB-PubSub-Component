@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202309251740-modify-constraints-on-publisher-constraints
+      author: Stefan Cvetkovski
+      changes:
+        - dropUniqueConstraint:
+            tableName: publisher_constraints
+            constraintName: uq_publisher_constraints
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE publisher_constraints ADD CONSTRAINT uq_publisher_constraints UNIQUE NULLS NOT DISTINCT (publisher_id, event_type_id, deleted_at);

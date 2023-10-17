@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/create-member-subscription-request-schema.json",
+  "title": "Create XRoad subscription request",
+  "description": "Data for creating a XRoad subscription",
+  "type": "object",
+  "properties": {
+    "eventType": {
+      "type": "string",
+      "description": "Identifies event type"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["PUSH", "PULL"],
+      "description": "Identifies subscription type as either being PULL or PUSH"
+    },
+    "pushUrl": {
+      "type": "string",
+      "description": "Path to the listening endpoint in the subsystem for the callback to push messages. NOT the full path. Required for PUSH configuration, ignored for PULL."
+    },
+    "deliveryDelay": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Duration in milliseconds for delay between message delivery attempts. Optional and will override room default value in PUSH configuration, ignored for PULL."
+    },
+    "deliveryDelayMultiplier": {
+      "type": "number",
+      "minimum": 1.01,
+      "description": "Multiplier by which delivery delay is increased exponentially between delivery attempts. Optional and will override room default value in PUSH configuration, ignored for PULL."
+    },
+    "deliveryAttempts": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum number of delivery attempts. Optional and will override room default value in PUSH configuration, ignored for PULL."
+    }
+  },
+  "required": ["eventType", "method"],
+  "dependencies": {
+    "method": {
+      "oneOf": [
+        {
+          "properties": {
+            "method": { "enum": ["PUSH"] },
+            "pushUrl": { "type": "string" }
+          },
+          "required": ["pushUrl"]
+        },
+        {
+          "properties": {
+            "method": { "enum": ["PULL"] }
+          }
+        }
+      ]
+    }
+  }
+}

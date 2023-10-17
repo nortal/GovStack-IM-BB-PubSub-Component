@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202307281602-drop-unique-constraint-on-subscription-status
+      author: Stefan Cvetkovski
+      changes:
+        - dropUniqueConstraint:
+            tableName: subscription_status
+            constraintName: uq_subscription_status

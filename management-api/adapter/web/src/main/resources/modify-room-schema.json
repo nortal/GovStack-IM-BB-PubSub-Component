@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/modify-room-request-schema.json",
+  "title": "Modify room request",
+  "description": "Data for modifying a room",
+  "type": "object",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "New identifier of the room",
+      "pattern": "^[a-zA-Z0-9_\\-.]+$"
+    },
+    "managerIdentifier": {
+      "type": "string",
+      "description": "Identifier of the new manager of this room"
+    },
+    "messageExpiration": {
+      "type": ["integer", "null"],
+      "description": "Default duration in milliseconds after which messages should expire. If set to 'null', messages never expire."
+    },
+    "deliveryDelay": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Default duration in milliseconds for delay between message delivery attempts for subscriptions in PUSH configuration, ignored for PULL. Can be overridden by subscriptions."
+    },
+    "deliveryDelayMultiplier": {
+      "type": "number",
+      "minimum": 1.01,
+      "description": "Default multiplier by which delivery delay is increased exponentially between delivery attempts. Can be overridden by subscriptions."
+    },
+    "deliveryAttempts": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum number of delivery attempts for a message in PUSH configuration, ignored for PULL."
+    }
+  },
+  "minProperties": 1
+}

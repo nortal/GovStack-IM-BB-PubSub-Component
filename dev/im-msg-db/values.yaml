@@ -1,0 +1,19 @@
+auth:
+  enablePostgresUser: true
+  postgresPassword: "StrongPassword"
+  username: "im_msg_usr"
+  password: "im_msg_pass"
+  database: "im_msg_db"
+primary:
+  persistence:
+    enabled: false
+  service:
+    type: LoadBalancer
+    ports:
+      postgresql: 5432
+  initdb:
+    scripts:
+      init-db.sql: |-
+        CREATE SCHEMA im_msg;
+        GRANT ALL ON SCHEMA im_msg TO im_msg_usr;
+

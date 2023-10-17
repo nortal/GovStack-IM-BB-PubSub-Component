@@ -1,0 +1,109 @@
+# Build optimization
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+
+.messaging-api-rules: &messaging-api-rules
+  rules:
+  - changes:
+    - messaging-api/*
+    - common/*
+    - gradle/*
+    - versions.properties
+    - .gitlab-ci.yml
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.messaging-api-base:
+  image:
+    # This needs to be kept in sync with the project's Gradle wrapper version so local and CI builds use the same Gradle version
+    name: gradle:8.0.2-jdk17-alpine
+    pull_policy: if-not-present
+  cache: &gradle-cache
+    key:
+      files:
+        - gradle/wrapper/gradle-wrapper.properties
+    paths:
+      - cache/caches/
+      - cache/notifications/
+    policy: pull
+  before_script:
+    - export GRADLE_USER_HOME="cache/"
+  <<: *messaging-api-rules
+
+messaging-api-build:
+  stage: build
+  extends: .messaging-api-base
+  # Build task can also write to cache
+  cache:
+    <<: *gradle-cache
+    policy: pull-push
+  script:
+    - gradle messaging-api:assemble
+    # This task returns app version used in "messaging-api-build-image" job
+    - echo "APP_VERSION=$(gradle -q messaging-api:printVersion)" >> build.env
+  artifacts:
+    # This gets automatically picked up by dependant jobs
+    paths:
+      - messaging-api/build/*
+    reports:
+      dotenv: build.env
+
+messaging-api-test:
+  stage: test
+  needs: [ messaging-api-build ]
+  extends: .messaging-api-base
+  script:
+    - cd messaging-api
+    - gradle check
+  coverage: '/    - Line Coverage: ([0-9.]+)%/'
+  artifacts:
+    when: always
+    reports:
+      junit: messaging-api/**/build/test-results/test/**/TEST-*.xml
+    paths:
+      - messaging-api/**/build/reports/jacoco/test/jacocoTestReport.xml
+      - messaging-api/**/build/test-results/test/**/TEST-*.xml
+
+messaging-api-sonarqube-check:
+  stage: sonarqube-check
+  needs: [ messaging-api-test ]
+  extends: .messaging-api-base
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    - <<: *gradle-cache
+    - key: "${CI_JOB_NAME}"
+      paths:
+        - .sonar/cache
+  script: gradle messaging-api:sonar -Dsonar.branch.name="${CI_COMMIT_REF_NAME}"
+  allow_failure: true
+
+messaging-api-build-image:
+  stage: build-image
+  needs: [ messaging-api-build, messaging-api-test ]
+  environment:
+    name: $ECR_NAME
+  image:
+    name: docker:git
+    pull_policy: if-not-present
+  script:
+    - IMAGE_NAME="${AWS_ECR_URL}/im/pubsub/messaging-api:${APP_VERSION}-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - echo "IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "MESSAGING_API_IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "Building image ${IMAGE_NAME}"
+    - cd messaging-api
+    # Same output image as "gradle messaging-api:build", but that requires a docker image which has both Gradle and Docker
+    - docker build --load -f src/main/docker/Dockerfile.jvm -t ${IMAGE_NAME} .
+  artifacts:
+    # This gets automatically picked up by dependant jobs
+    reports:
+      dotenv: build.env
+  <<: *messaging-api-rules
+
+messaging-api-push-image:
+  extends: .push_docker_image
+  needs: [ messaging-api-build-image ]
+  before_script:
+    - !reference [.install_aws_cli]
+    - !reference [.login_to_aws_script]
+  <<: *messaging-api-rules

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/create-event-type-request-schema.json",
+  "title": "Create event type request",
+  "description": "Data for creating event types",
+  "type": "object",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "Describes the event type"
+    },
+    "versionNo": {
+      "type": "integer",
+      "description": "Identifies the version number"
+    },
+    "schema": {
+      "type": "string",
+      "description": "The version schema used for validating events"
+    }
+  },
+  "required": [
+    "identifier",
+    "versionNo",
+    "schema"
+  ]
+}

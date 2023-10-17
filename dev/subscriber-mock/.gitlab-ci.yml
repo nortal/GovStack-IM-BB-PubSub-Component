@@ -1,0 +1,40 @@
+.subscriber-mock-rules: &subscriber-mock-rules
+  rules:
+  - changes:
+    - dev/subscriber-mock/*
+    - .gitlab-ci.yml
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.subscriber-mock-base:
+  image:
+    name: docker:git
+    pull_policy: if-not-present
+  <<: *subscriber-mock-rules
+
+subscriber-mock-build-image:
+  stage: build-image
+  extends: .subscriber-mock-base
+  environment:
+    name: $ECR_NAME
+  before_script:
+    - apk add jq
+  script:
+    - export APP_VERSION=$(jq -r '.version' dev/subscriber-mock/package.json)
+    - IMAGE_NAME="${AWS_ECR_URL}/im/pubsub/subscriber-mock:${APP_VERSION}-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - echo "IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "SUBSCRIBER_MOCK_IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "Building image ${IMAGE_NAME}"
+    - cd dev/subscriber-mock
+    - docker build --load -f Dockerfile -t $IMAGE_NAME .
+  artifacts:
+    # This gets automatically picked up by dependant jobs
+    reports:
+      dotenv: build.env
+
+subscriber-mock-push-image:
+  extends: .push_docker_image
+  needs: [ subscriber-mock-build-image ]
+  before_script:
+    - !reference [.install_aws_cli]
+    - !reference [.login_to_aws_script]
+  <<: *subscriber-mock-rules

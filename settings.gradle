@@ -1,0 +1,36 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+}
+
+plugins {
+    // See https://jmfayard.github.io/refreshVersions
+    id 'de.fayard.refreshVersions' version '0.51.0'
+}
+
+rootProject.name = 'govstack.im-bb.pubsub'
+
+include ":schema"
+include ":shared:domain-entity"
+include ":shared:commons"
+include ":shared:jooq"
+
+include ":management-api:adapter:jdbc"
+include ":management-api:adapter:web"
+include ':management-api:adapter:xroad-admin'
+include ":management-api:domain"
+include ":management-api"
+
+include ":management-ui"
+
+include ":messaging-api:adapter:artemis"
+include ":messaging-api:adapter:jdbc"
+include ":messaging-api:adapter:web"
+include ":messaging-api:domain"
+include ":messaging-api"
+
+include ":tests"
+include 'performance-test'

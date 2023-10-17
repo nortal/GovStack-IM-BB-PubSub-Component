@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/create-manager-request-schema.json",
+  "title": "Create manager request",
+  "description": "Data for creating manager",
+  "type": "object",
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "description": "Identifies the manager"
+    },
+    "identifierType": {
+      "type": "string",
+      "enum": ["INTERNAL", "XROAD"],
+      "description": "The identifier type"
+    }
+  },
+  "required": ["identifier"]
+}

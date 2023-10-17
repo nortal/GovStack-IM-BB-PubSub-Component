@@ -1,0 +1,79 @@
+.management-ui-rules: &management-ui-rules
+  rules:
+  - changes:
+    - management-ui/*
+    - .gitlab-ci.yml
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.management-ui-base:
+  image:
+    name: docker:git
+    pull_policy: if-not-present
+  <<: *management-ui-rules
+
+management-ui-build:
+  stage: build
+  extends: .management-ui-base
+  script:
+  - cd management-ui
+  - docker build -f deployment/Dockerfile --target build-stage .
+
+management-ui-test:
+  stage: test
+  needs: [ management-ui-build ]
+  extends: .management-ui-base
+  allow_failure: true
+  script:
+    - cd management-ui
+    - docker buildx build -f deployment/Dockerfile -t tests --load --target test-stage .
+    # Needed to get the test results XML out of the image, clean up afterward
+    - id=$(docker create tests)
+    - mkdir reports
+    - docker cp $id:/app/build/junit-report.xml reports/junit-report.xml
+    - docker container rm $id
+    - docker image rm tests
+  artifacts:
+    when: always
+    paths:
+      - management-ui/reports/
+    reports:
+      junit: management-ui/reports/junit-report.xml
+
+management-ui-sonarqube-check:
+  stage: sonarqube-check
+  needs: [ management-ui-test ]
+  extends: .management-ui-base
+  script:
+    - cd management-ui
+    - docker build -f deployment/Dockerfile -t sonarqube-check --rm --target sonarqube-stage
+      --build-arg BRANCH_NAME=${CI_COMMIT_REF_NAME} --build-arg SONAR_HOST_URL=$SONAR_HOST_URL --build-arg SONAR_LOGIN=$SONAR_TOKEN .
+  allow_failure: true
+
+management-ui-build-image:
+  stage: build-image
+  needs: [ management-ui-test ]
+  extends: .management-ui-base
+  environment:
+    name: $ECR_NAME
+  before_script:
+    - apk add jq
+  script:
+    - export APP_VERSION=$(jq -r '.version' management-ui/package.json)
+    - IMAGE_NAME="${AWS_ECR_URL}/im/pubsub/management-ui:${APP_VERSION}-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - echo "IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "MANAGEMENT_UI_IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "Building image ${IMAGE_NAME}"
+    - cd management-ui
+    - docker build --load -f deployment/Dockerfile -t $IMAGE_NAME --target production-stage .
+  artifacts:
+    # This gets automatically picked up by dependant jobs
+    reports:
+      dotenv: build.env
+
+management-ui-push-image:
+  extends: .push_docker_image
+  needs: [ management-ui-build-image ]
+  before_script:
+    - !reference [.install_aws_cli]
+    - !reference [.login_to_aws_script]
+  <<: *management-ui-rules

@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/realms/pubsub-realm/protocol/openid-connect/auth"
+  },
+  "response": {
+    "status": 302,
+    "headers": {
+      "Location": "https://localhost:8081?code=a8476a83-cddf-4fee-abe6-24f42c14363b.b7720943-1067-49c3-9a5e-118917be2224.77ec0d10-f123-4476-ba6d-a6a79c6372c9&state=959bb058-5232-4cc2-a7f6-e5b67e05329f"
+    }
+  }
+}

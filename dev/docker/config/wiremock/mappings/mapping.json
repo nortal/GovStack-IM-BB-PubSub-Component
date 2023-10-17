@@ -1,0 +1,9 @@
+{
+  "request": {
+    "urlPath": "/api/callback",
+    "method": "POST"
+  },
+  "response": {
+    "status": 200
+  }
+}

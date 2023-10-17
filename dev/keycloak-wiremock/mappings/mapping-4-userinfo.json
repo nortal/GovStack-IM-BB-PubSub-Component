@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/realms/pubsub-realm/protocol/openid-connect/userinfo"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "sub"         : "24c46751-87eb-4c6b-8eaa-4042b10881fe",
+      "name"        : "X-Road Security Officer",
+      "given_name"  : "X-Road",
+      "family_name" : "Security Officer",
+      "email_verified": false
+    }
+  }
+}

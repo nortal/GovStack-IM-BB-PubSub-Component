@@ -1,0 +1,81 @@
+workflow:
+  name: "$PIPELINE_NAME - push to '$ECR_NAME' ECR, run e2e tests='${RUN_E2E_TESTS}'"
+  # When to run workflow
+  rules:
+    # https://docs.gitlab.com/ee/ci/pipelines/merge_request_pipelines.html
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        PIPELINE_NAME: "MR pipeline: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+    # Running from the GitLab Web UI, NOTE: all jobs executed
+    - if: $CI_PIPELINE_SOURCE == "web"
+    # Pushing to default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        RUN_E2E_TESTS: "true"
+
+stages:
+  - build
+  - test
+  - sonarqube-check
+  - build-image
+  - push-image
+  - e2e-tests
+
+variables:
+  PIPELINE_NAME: "Branch pipeline: $CI_COMMIT_BRANCH"
+  ECR_NAME:
+    value: "nortal"
+    options:
+      - "nortal"
+      - "gofore"
+    description: "Select the ECR target. Valid options are: 'nortal', 'gofore'"
+  RUN_E2E_TESTS:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Run E2E tests"
+
+# Include subproject pipelines
+include:
+  - "schema/.gitlab-ci.yml"
+  - "messaging-api/.gitlab-ci.yml"
+  - "management-api/.gitlab-ci.yml"
+  - "management-ui/.gitlab-ci.yml"
+  - "tests/.gitlab-ci.yml"
+
+.install_aws_cli:
+  - echo "--- install_aws_cli ---"
+  - apk add --no-cache python3 py3-pip
+  - pip3 install --no-cache-dir awscli
+
+.login_to_aws_script:
+  - echo "--- login_to_aws_script ---"
+  - >
+    export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s"
+    $(aws sts assume-role-with-web-identity
+    --role-arn ${AWS_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token ${GITLAB_OIDC_TOKEN}
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - aws sts get-caller-identity
+  - export AWS_ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
+
+.push_docker_image:
+  stage: push-image
+  image:
+    name: docker:git
+    pull_policy: if-not-present
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gitlab.nortal.com
+  environment:
+    name: $ECR_NAME
+  script:
+    - aws ecr get-login-password |
+      docker login --username AWS --password-stdin
+      ${AWS_ECR_URL}
+    - echo "Pushing image ${IMAGE_NAME}"
+    - docker push $IMAGE_NAME

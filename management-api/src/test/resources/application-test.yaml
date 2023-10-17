@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:im_msg_db;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS im_msg\;SET SCHEMA im_msg;
+    username: im_msg_usr
+    password: im_msg_pass
+  artemis:
+    mode: embedded

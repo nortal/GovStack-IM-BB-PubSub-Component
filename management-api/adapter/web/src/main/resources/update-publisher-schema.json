@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/update-publisher-request-schema.json",
+  "title": "Update publisher request",
+  "description": "Data for updating publishers",
+  "type": "object",
+  "properties": {
+    "eventTypes": {
+      "type": "array",
+      "description": "Identifies the event types for the publisher",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "eventTypes"
+  ]
+}

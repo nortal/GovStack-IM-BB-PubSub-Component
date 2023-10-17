@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/rooms/subscription-018b235a-62e8-77b3-9306-36a140ff5861/room-018b235a-62e8-77b3-9306-36a140ff5861/subscriptions</div>
+
+<h4>Body</h4>
+<div>
+    <pre class="preformated-text">
+{
+    &quot;method&quot;: &quot;PUSH&quot;,
+    &quot;pushUrl&quot;: &quot;http://wiremock:8080/018b235a-6320-7410-ae50-6d16206c9958&quot;,
+    &quot;eventType&quot;: &quot;EVENT-018b235a-62e8-77b3-9306-36a140ff5861&quot;
+}    </pre>
+</div>
+
+<h4>Headers</h4>
+<div>
+        <div>X-Road-Client: subscription-018b235a-62e8-77b3-9306-36a140ff5861</div>
+        <div>Accept: */*</div>
+        <div>Content-Type: application/json</div>
+</div>
+
+
+
+<h4>Curl</h4>
+<div>
+curl -v -X POST &#39;http://localhost:8080/rooms/subscription-018b235a-62e8-77b3-9306-36a140ff5861/room-018b235a-62e8-77b3-9306-36a140ff5861/subscriptions&#39; -H &#39;X-Road-Client: subscription-018b235a-62e8-77b3-9306-36a140ff5861&#39; -H &#39;Accept: */*&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;method&quot;: &quot;PUSH&quot;,
+    &quot;pushUrl&quot;: &quot;http://wiremock:8080/018b235a-6320-7410-ae50-6d16206c9958&quot;,
+    &quot;eventType&quot;: &quot;EVENT-018b235a-62e8-77b3-9306-36a140ff5861&quot;
+}&#39;
+</div>

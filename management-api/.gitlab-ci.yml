@@ -1,0 +1,96 @@
+# Build optimization
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+
+.management-api-rules: &management-api-rules
+  rules:
+  - changes:
+    - management-api/*
+    - common/*
+    - gradle/*
+    - versions.properties
+    - .gitlab-ci.yml
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.management-api-base:
+  image:
+    # This needs to be kept in sync with the project's Gradle wrapper version so local and CI builds use the same Gradle version
+    name: gradle:8.0.2-jdk17-alpine
+    pull_policy: if-not-present
+  cache: &gradle-cache
+    key:
+      files:
+        - gradle/wrapper/gradle-wrapper.properties
+    paths:
+      - cache/caches/
+      - cache/notifications/
+    policy: pull
+  before_script:
+    - export GRADLE_USER_HOME="cache/"
+  <<: *management-api-rules
+
+management-api-build:
+  stage: build
+  extends: .management-api-base
+  # Build task can also write to cache
+  cache:
+      <<: *gradle-cache
+      policy: pull-push
+  script: gradle management-api:assemble
+
+management-api-test:
+  stage: test
+  needs: [ management-api-build ]
+  extends: .management-api-base
+  script:
+    - cd management-api
+    - gradle check
+  coverage: '/    - Line Coverage: ([0-9.]+)%/'
+  artifacts:
+    when: always
+    reports:
+      junit: management-api/**/build/test-results/test/**/TEST-*.xml
+    paths:
+      - management-api/**/build/reports/jacoco/test/jacocoTestReport.xml
+      - management-api/**/build/test-results/test/**/TEST-*.xml
+
+management-api-sonarqube-check:
+  stage: sonarqube-check
+  needs: [ management-api-test ]
+  extends: .management-api-base
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    - <<: *gradle-cache
+    - key: "${CI_JOB_NAME}"
+      paths:
+        - .sonar/cache
+  script: gradle management-api:sonar -Dsonar.branch.name="${CI_COMMIT_REF_NAME}"
+  allow_failure: true
+
+management-api-build-image:
+  stage: build-image
+  needs: [ management-api-test ]
+  extends: .management-api-base
+  environment:
+    name: $ECR_NAME
+  script:
+    - APP_VERSION=$(gradle -q management-api:printVersion)
+    - IMAGE_NAME="${AWS_ECR_URL}/im/pubsub/management-api:${APP_VERSION}-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - echo "Building image ${IMAGE_NAME}"
+    - gradle management-api:bootBuildImage --imageName=${IMAGE_NAME}
+    - echo "IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "MANAGEMENT_API_IMAGE_NAME=${IMAGE_NAME}" >> build.env
+  artifacts:
+    # This gets automatically picked up by dependant jobs
+    reports:
+      dotenv: build.env
+
+management-api-push-image:
+  extends: .push_docker_image
+  needs: [ management-api-build-image ]
+  before_script:
+    - !reference [.install_aws_cli]
+    - !reference [.login_to_aws_script]
+  <<: *management-api-rules

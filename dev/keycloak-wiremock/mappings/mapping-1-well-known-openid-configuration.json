@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/realms/pubsub-realm/.well-known/openid-configuration"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "issuer": "http://pubsub.test:8088/realms/pubsub-realm",
+      "authorization_endpoint": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect",
+      "token_endpoint": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect/token",
+      "introspection_endpoint": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect/token/introspect",
+      "userinfo_endpoint": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect/userinfo",
+      "end_session_endpoint": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect/logout",
+      "jwks_uri": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect/certs",
+      "check_session_iframe": "http://pubsub.test:8088/realms/pubsub-realm/protocol/openid-connect/login-status-iframe.html"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "transformers": [
+      "response-template"
+    ]
+  }
+}

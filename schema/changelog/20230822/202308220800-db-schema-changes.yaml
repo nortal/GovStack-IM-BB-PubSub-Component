@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202308220800-modify-unique-constraint-on-rooms
+      author: Sander Aido
+      changes:
+        - dropUniqueConstraint:
+            tableName: rooms
+            constraintName: uq_rooms
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE rooms ADD CONSTRAINT uq_rooms UNIQUE NULLS NOT DISTINCT (manager_id, identifier, deleted_at);

@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202309050740-alter-published-messages-add-column
+      author: Stefan Cvetkovski
+      changes:
+        - addColumn:
+            tableName: published_messages
+            columns:
+              - column:
+                  name: delivered_at
+                  type: timestamptz
+                  remarks: moment when the subscriber pulls the message from their queue or the pushed message is acknowledged by the subscriber
+
+  - changeSet:
+      id: 202309050750-modify-constraints-on-subscriptions
+      author: Stefan Cvetkovski
+      changes:
+        - dropUniqueConstraint:
+            tableName: subscriptions
+            constraintName: uq_subscriptions
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE subscriptions ADD CONSTRAINT ch_subscriptions_method CHECK ((((parameters->>'method')::VARCHAR) = 'PULL' AND ((parameters->>'pushUrl')::VARCHAR) IS NULL) OR (((parameters->>'method')::VARCHAR) = 'PUSH' AND ((parameters->>'pushUrl')::VARCHAR) IS NOT NULL));
+        - sql:
+            dbms: postgresql
+            sql: CREATE UNIQUE INDEX uq_subscriptions_idx ON subscriptions(room_id, event_type_id, identifier, ((parameters->>'method')::VARCHAR), ((parameters->>'pushUrl')::VARCHAR), deleted_at) NULLS NOT DISTINCT;
+
+  - changeSet:
+      id: 202309051000-modify-unique-constraint-on-rooms
+      author: Stefan Cvetkovski
+      changes:
+        - dropUniqueConstraint:
+            tableName: rooms
+            constraintName: uq_rooms
+        - sql:
+            dbms: postgresql
+            sql: ALTER TABLE rooms ADD CONSTRAINT uq_rooms UNIQUE NULLS NOT DISTINCT (identifier, deleted_at);
+
+  - changeSet:
+      id: 202309051001-add-null-constraint-fk-rooms-manager-id
+      author: Stefan Cvetkovski
+      changes:
+        - addNotNullConstraint:
+            tableName: rooms
+            columnName: manager_id
+            columnDataType: uuid

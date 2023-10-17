@@ -1,0 +1,3 @@
+application:
+  global:
+    time-zone: Europe/Tallinn

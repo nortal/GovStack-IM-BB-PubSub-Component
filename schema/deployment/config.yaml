@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema
+
+data:
+  JDBC_URL: "jdbc:postgresql://im-msg-db-postgresql:5432/im_msg_db?currentSchema=im_msg"

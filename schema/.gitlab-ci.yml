@@ -1,0 +1,54 @@
+# Build optimization
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+
+.schema-base-rules: &schema-rules
+  rules:
+  - changes:
+    - schema/*
+    - gradle/*
+    - versions.properties
+    - .gitlab-ci.yml
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+.schema-base:
+  image:
+    # This needs to be kept in sync with the project's Gradle wrapper version so local and CI builds use the same Gradle version
+    name: gradle:8.0.2-jdk17-alpine
+    pull_policy: if-not-present
+  cache:
+    key:
+      files:
+        - gradle/wrapper/gradle-wrapper.properties
+    paths:
+      - cache/caches/
+      - cache/notifications/
+    policy: pull
+  before_script:
+    - export GRADLE_USER_HOME="cache/"
+  <<: *schema-rules
+
+schema-build-image:
+  stage: build-image
+  extends: .schema-base
+  environment:
+    name: $ECR_NAME
+  script:
+    - APP_VERSION=$(gradle -q schema:printVersion)
+    - IMAGE_NAME="${AWS_ECR_URL}/im/pubsub/schema:${APP_VERSION}-${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - echo "Building image ${IMAGE_NAME}"
+    - gradle schema:buildImage -PimageName=${IMAGE_NAME}
+    - echo "IMAGE_NAME=${IMAGE_NAME}" >> build.env
+    - echo "SCHEMA_IMAGE_NAME=${IMAGE_NAME}" >> build.env
+  artifacts:
+    # This gets automatically picked up by dependant jobs
+    reports:
+      dotenv: build.env
+
+schema-push-image:
+  extends: .push_docker_image
+  needs: [ schema-build-image ]
+  before_script:
+    - !reference [.install_aws_cli]
+    - !reference [.login_to_aws_script]
+  <<: *schema-rules

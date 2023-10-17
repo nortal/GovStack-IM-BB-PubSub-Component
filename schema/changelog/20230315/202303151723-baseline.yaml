@@ -1,0 +1,499 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202303151723-baseline
+      author: Kaarel Raspel
+      changes:
+
+        - createTable:
+            tableName: managers
+            remarks: record of managers in charge of specific rooms
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) Primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_managers
+              - column:
+                  name: identifier_type
+                  type: varchar
+                  remarks: enumerator specifying the source of identity
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: varchar
+                  remarks: identification token/code of the specified type
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  remarks: the moment of assigning the manager to a room
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: managers
+            columnNames: >-
+              identifier_type,
+              identifier,
+              deleted_at
+            constraintName: uq_managers
+
+        - createTable:
+            tableName: rooms
+            remarks: record of rooms where events can be published
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_rooms
+              - column:
+                  name: manager_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: managers(id)
+                    foreignKeyName: fk_rooms_manager_id
+              - column:
+                  name: identifier
+                  type: varchar
+                  remarks: human readable identifier for the room, used as name
+                  constraints:
+                    nullable: false
+              - column:
+                  name: configuration
+                  type: jsonb
+                  remarks: room configuration
+                  constraints:
+                    nullable: false
+              - column:
+                  name: journal
+                  type: jsonb
+                  remarks: (technical field) auditable journal of record changes
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: rooms
+            columnNames: >-
+              manager_id,
+              identifier,
+              deleted_at
+            constraintName: uq_rooms
+
+        - createTable:
+            tableName: event_types
+            remarks: record of event types available in specific room
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_event_types
+              - column:
+                  name: room_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: rooms(id)
+                    foreignKeyName: fk_event_types_room_id
+              - column:
+                  name: identifier
+                  type: varchar
+                  remarks: human readable identifier for the event type, used as name
+                  constraints:
+                    nullable: false
+              - column:
+                  name: journal
+                  type: jsonb
+                  remarks: (technical field) auditable journal of record changes
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: event_types
+            columnNames: >-
+              room_id,
+              identifier,
+              deleted_at
+            constraintName: uq_event_types
+
+        - createTable:
+            tableName: event_type_versions
+            remarks: record of different versions of a specific event type
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_event_type_versions
+              - column:
+                  name: event_type_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: event_types(id)
+                    foreignKeyName: fk_event_type_versions_event_type_id
+              - column:
+                  name: version
+                  type: integer
+                  remarks: version number of the event type
+                  constraints:
+                    nullable: false
+              - column:
+                  name: json_schema
+                  type: jsonb
+                  remarks: JSON schema of the required payload shape for this version of the event type
+                  constraints:
+                    nullable: false
+              - column:
+                  name: journal
+                  type: jsonb
+                  remarks: (technical field) auditable journal of record changes
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: event_type_versions
+            columnNames: >-
+              event_type_id,
+              version,
+              deleted_at
+            constraintName: uq_event_type_versions
+
+        - createTable:
+            tableName: publishers
+            remarks: record of publishers allowed to create events in specific rooms
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_publishers
+              - column:
+                  name: room_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: rooms(id)
+                    foreignKeyName: fk_publishers_room_id
+              - column:
+                  name: identifier_type
+                  type: varchar
+                  remarks: enumerator specifying the source of identity
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: varchar
+                  remarks: identification token/code of the specified type
+                  constraints:
+                    nullable: false
+              - column:
+                  name: journal
+                  type: jsonb
+                  remarks: (technical field) auditable journal of record changes
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: publishers
+            columnNames: >-
+              room_id,
+              identifier_type,
+              identifier,
+              deleted_at
+            constraintName: uq_publishers
+
+        - createTable:
+            tableName: publisher_constraints
+            remarks: record of event types a specific publisher is allowed to create
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_publisher_constraints
+              - column:
+                  name: publisher_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: publishers(id)
+                    foreignKeyName: fk_publisher_constraints_publishers_id
+              - column:
+                  name: event_type_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: event_types(id)
+                    foreignKeyName: fk_publisher_constraints_event_types_id
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  remarks: creation time of the publisher constraint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: publisher_constraints
+            columnNames: >-
+              publisher_id,
+              event_type_id,
+              deleted_at
+            constraintName: uq_publisher_constraints
+
+        - createTable:
+            tableName: subscriptions
+            remarks: record of subscriptions to a specific room
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_subscriptions
+              - column:
+                  name: room_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: rooms(id)
+                    foreignKeyName: fk_subscriptions_room_id
+              - column:
+                  name: event_type_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: event_types(id)
+                    foreignKeyName: fk_subscriptions_event_type_id
+              - column:
+                  name: identifier_type
+                  type: varchar
+                  remarks: enumerator specifying the source of identity
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: varchar
+                  remarks: identification token/code of the specified type
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parameters
+                  type: jsonb
+                  remarks: subscription parameters
+                  constraints:
+                    nullable: false
+              - column:
+                  name: journal
+                  type: jsonb
+                  remarks: (technical field) auditable journal of record changes
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamptz
+                  remarks: (technical field) deletion moment of the record
+        - addUniqueConstraint:
+            tableName: subscriptions
+            columnNames: >-
+              room_id,
+              event_type_id,
+              identifier_type,
+              identifier,
+              deleted_at
+            constraintName: uq_subscriptions
+
+        - createTable:
+            tableName: subscription_status
+            remarks: record of the status of a specific subscription
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_subscription_status
+              - column:
+                  name: subscription_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: subscriptions(id)
+                    foreignKeyName: fk_subscription_status_subscription_id
+              - column:
+                  name: status
+                  type: varchar
+                  remarks: enumerator of the status to be assigned to the subscription
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  remarks: moment of assigning the status to a subscription
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: subscription_status
+            columnNames: >-
+              subscription_id
+            constraintName: uq_subscription_status
+
+        - createTable:
+            tableName: events
+            remarks: record of all published events
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_events
+              - column:
+                  name: room_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: rooms(id)
+                    foreignKeyName: fk_events_room_id
+              - column:
+                  name: event_type_version_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: event_type_versions(id)
+                    foreignKeyName: fk_events_event_type_version_id
+              - column:
+                  name: event_type_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: event_types(id)
+                    foreignKeyName: fk_events_event_type_id
+              - column:
+                  name: publisher_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: publishers(id)
+                    foreignKeyName: fk_events_publisher_id
+              - column:
+                  name: message_id
+                  type: varchar
+                  remarks: A field that corresponds to 'JMSMessageId' value of ActiveMQ Artemis
+                  constraints:
+                    nullable: false
+              - column:
+                  name: correlation_id
+                  type: varchar
+                  remarks: Transaction/Trace/Correlation ID for the message
+              - column:
+                  name: published_at
+                  type: timestamptz
+                  remarks: Filled with a timestamp when ActiveMQ Artemis acknowledges publishing
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: events
+            columnNames: >-
+              room_id,
+              event_type_id,
+              event_type_version_id,
+              publisher_id
+            constraintName: uq_events
+
+        - createTable:
+            tableName: subscribed_events
+            remarks: record of events linked to subscriptions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  remarks: (technical field) primary key of record
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: event_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: events(id)
+                    foreignKeyName: fk_subscribed_events_event_id
+              - column:
+                  name: subscription_id
+                  type: uuid
+                  remarks: (technical field) foreign key connected to the record
+                  constraints:
+                    nullable: false
+                    references: subscriptions(id)
+                    foreignKeyName: fk_subscribed_subscription_id
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  remarks: the moment of linking an event to a subscription
+                  constraints:
+                    nullable: false
+              - column:
+                  name: delivered_at
+                  type: timestamptz
+                  remarks: delivery moment of the message of the event to the subscriber
+              - column:
+                  name: expires_at
+                  type: timestamptz
+                  remarks: the moment when the event message will be considered undeliverable to the subscriber
+        - addUniqueConstraint:
+            tableName: subscribed_events
+            columnNames: >-
+              event_id,
+              subscription_id
+            constraintName: uq_subscribed_events

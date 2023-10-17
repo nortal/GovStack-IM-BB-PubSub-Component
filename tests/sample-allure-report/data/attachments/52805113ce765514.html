@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/rooms/subscription-018b235a-54c2-7566-ade2-41174c893695/room-018b235a-54c2-7566-ade2-41174c893695/subscriptions</div>
+
+<h4>Body</h4>
+<div>
+    <pre class="preformated-text">
+{
+    &quot;method&quot;: &quot;PULL&quot;,
+    &quot;deliveryDelay&quot;: 100,
+    &quot;eventType&quot;: &quot;EVENT-018b235a-54c2-7566-ade2-41174c893695&quot;
+}    </pre>
+</div>
+
+<h4>Headers</h4>
+<div>
+        <div>X-Road-Client: subscription-018b235a-54c2-7566-ade2-41174c893695</div>
+        <div>Accept: */*</div>
+        <div>Content-Type: application/json</div>
+</div>
+
+
+
+<h4>Curl</h4>
+<div>
+curl -v -X POST &#39;http://localhost:8080/rooms/subscription-018b235a-54c2-7566-ade2-41174c893695/room-018b235a-54c2-7566-ade2-41174c893695/subscriptions&#39; -H &#39;X-Road-Client: subscription-018b235a-54c2-7566-ade2-41174c893695&#39; -H &#39;Accept: */*&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;method&quot;: &quot;PULL&quot;,
+    &quot;deliveryDelay&quot;: 100,
+    &quot;eventType&quot;: &quot;EVENT-018b235a-54c2-7566-ade2-41174c893695&quot;
+}&#39;
+</div>

@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202310031740-add-subscription-event-view
+      author: Sander Aido
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: CREATE OR REPLACE VIEW subscription_event_view AS
+              SELECT
+              e.id AS event_id,
+              et.identifier AS event_type_identifier,
+              e.created_at AS event_created_at,
+              s.id AS subscription_id,
+              CAST(COUNT(pm.published_at IS NOT NULL OR NULL) AS INT) AS delivery_attempts,
+              CASE
+              WHEN MAX(pm.delivered_at) IS NOT NULL THEN 'DELIVERED'
+              WHEN MIN(pm.published_at) < (CURRENT_TIMESTAMP - ((r.configuration ->> 'messageExpiration')::INTEGER || ' milliseconds')::INTERVAL) THEN 'UNCONSUMED'
+              WHEN (s.parameters ->> 'method') = 'PULL' THEN 'PUBLISHED'
+              WHEN (s.parameters ->> 'method') = 'PUSH' AND COUNT(pm.published_at IS NOT NULL OR NULL) < COALESCE((s.parameters ->> 'deliveryAttempts')::INTEGER, (r.configuration ->> 'deliveryAttempts')::INTEGER) THEN 'PENDING'
+              ELSE 'UNCONSUMED'
+              END AS delivery_status
+              FROM
+              events e
+              JOIN
+              event_types et ON e.event_type_id = et.id
+              LEFT JOIN
+              published_messages pm ON e.id = pm.event_id
+              JOIN
+              subscriptions s ON pm.subscription_id = s.id
+              JOIN
+              rooms r ON s.room_id = r.id
+              GROUP BY
+              e.id, et.identifier, e.created_at, s.id, s.parameters, r.configuration;

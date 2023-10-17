@@ -1,0 +1,29 @@
+<div>POST to http://localhost:8080/rooms/subscription-018b235a-5a7e-72d9-97c5-55d5202d1a9f/room-018b235a-5a7e-72d9-97c5-55d5202d1a9f/subscriptions</div>
+
+<h4>Body</h4>
+<div>
+    <pre class="preformated-text">
+{
+    &quot;method&quot;: &quot;PUSH&quot;,
+    &quot;pushUrl&quot;: &quot;http://wiremock:8080/018b235a-5af4-76c2-83e6-b965c1560692&quot;,
+    &quot;eventType&quot;: &quot;EVENT-018b235a-5a7e-72d9-97c5-55d5202d1a9f&quot;
+}    </pre>
+</div>
+
+<h4>Headers</h4>
+<div>
+        <div>X-Road-Client: subscription-018b235a-5a7e-72d9-97c5-55d5202d1a9f</div>
+        <div>Accept: */*</div>
+        <div>Content-Type: application/json</div>
+</div>
+
+
+
+<h4>Curl</h4>
+<div>
+curl -v -X POST &#39;http://localhost:8080/rooms/subscription-018b235a-5a7e-72d9-97c5-55d5202d1a9f/room-018b235a-5a7e-72d9-97c5-55d5202d1a9f/subscriptions&#39; -H &#39;X-Road-Client: subscription-018b235a-5a7e-72d9-97c5-55d5202d1a9f&#39; -H &#39;Accept: */*&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;method&quot;: &quot;PUSH&quot;,
+    &quot;pushUrl&quot;: &quot;http://wiremock:8080/018b235a-5af4-76c2-83e6-b965c1560692&quot;,
+    &quot;eventType&quot;: &quot;EVENT-018b235a-5a7e-72d9-97c5-55d5202d1a9f&quot;
+}&#39;
+</div>

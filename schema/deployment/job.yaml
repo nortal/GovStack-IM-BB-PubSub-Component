@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: schema
+spec:
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      name: schema
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: schema
+          image: image
+          imagePullPolicy: Always
+
+          envFrom:
+            - configMapRef:
+                name: schema
+            - secretRef:
+                name: schema
+      restartPolicy: Never

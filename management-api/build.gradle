@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'jacoco'
+    id 'org.sonarqube'
+    id 'org.barfuin.gradle.jacocolog'
+}
+
+group = 'com.govstack.information_mediator.pubsub'
+version = '0.0.1'
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':management-api:domain')
+    implementation project(':management-api:adapter:jdbc')
+    implementation project(':management-api:adapter:web')
+    implementation project(':management-api:adapter:xroad-admin')
+
+    implementation project(':shared:commons')
+
+    implementation Spring.boot.web
+
+    implementation("org.springframework.boot:spring-boot-starter:_")
+    implementation(Spring.boot.web)
+
+    testImplementation Spring.boot.test
+    testImplementation 'com.h2database:h2:_'
+
+    // Starts Artemis JMS server for integration tests.
+    testImplementation("org.apache.activemq:artemis-jms-server:_")
+}
+
+tasks.register("printVersion")  {
+    println project.version
+}
+
+jacoco {
+    toolVersion = '0.8.7'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        xml.outputLocation = file("build/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "govstack_im-bb-pubsub_management-api"
+        property "sonar.projectName", "Govstack | IM-BB-PubSub | Management API"
+        property "sonar.qualitygate.wait", false
+        property "sonar.java.coveragePlugin", "jacoco"
+    }
+}

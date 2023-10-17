@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'jacoco'
+    id 'org.sonarqube'
+    id 'org.barfuin.gradle.jacocolog'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation project(':messaging-api:domain')
+    implementation project(':messaging-api:adapter:artemis')
+    implementation project(':messaging-api:adapter:jdbc')
+    implementation project(':messaging-api:adapter:web')
+
+    implementation project(':shared:commons')
+
+    implementation 'io.quarkus:quarkus-container-image-docker:_'
+    implementation 'io.quarkus:quarkus-config-yaml:_'
+
+    /// Quarkus dependencies
+    implementation enforcedPlatform('io.quarkus.platform:quarkus-bom:_')
+    implementation 'io.quarkus:quarkus-resteasy-reactive:_'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson:_'
+    implementation 'io.quarkus:quarkus-arc:_'
+
+    testImplementation 'io.quarkus:quarkus-junit5:_'
+    testImplementation 'io.rest-assured:rest-assured:_'
+    testImplementation("org.hamcrest:java-hamcrest:_")
+    testImplementation(Testing.assertj.core)
+    testImplementation(Testing.mockito.core)
+    testImplementation(Testing.mockito.junitJupiter)
+    testImplementation(Testing.junit.jupiter.engine)
+    testImplementation(Testing.junit.jupiter.params)
+}
+
+version = '0.0.1'
+group 'com.govstack.information_mediator.pubsub'
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+jacoco {
+    toolVersion = '0.8.7'
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        xml.outputLocation = file("build/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+tasks.register("printVersion")  {
+    println project.version
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "govstack_im-bb-pubsub_messaging-api"
+        property "sonar.projectName", "Govstack | IM-BB-PubSub | Messaging API"
+        property "sonar.qualitygate.wait", false
+        property "sonar.java.coveragePlugin", "jacoco"
+    }
+}

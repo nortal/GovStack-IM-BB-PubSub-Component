@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/update-event-type-version-request-schema.json",
+  "title": "Update event type version request",
+  "description": "Data for updating event type version",
+  "type": "object",
+  "properties": {
+    "versionNo": {
+      "type": "integer",
+      "description": "Identifies the version number"
+    },
+    "schema": {
+      "type": "string",
+      "description": "The version schema used for validating events"
+    }
+  },
+  "required": ["versionNo", "schema"]
+}

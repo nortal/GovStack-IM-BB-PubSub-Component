@@ -1,0 +1,20 @@
+wiremock:
+  image:
+    repository: wiremock/wiremock
+    tag: 2.32.0-alpine
+    pullPolicy: IfNotPresent
+  httpPort: 8088
+
+service:
+  type: LoadBalancer
+  port: 8088
+  targetPort: 8088
+
+ingress:
+  enabled: false
+
+deployment:
+  replicas: 1
+
+config:
+  enabled: true

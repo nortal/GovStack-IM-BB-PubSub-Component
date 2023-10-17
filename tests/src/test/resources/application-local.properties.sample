@@ -1,0 +1,17 @@
+# PubSub
+messaging-api.url = http://localhost:8090
+management-api.url = http://localhost:8080
+management-ui.url = http://localhost:5173
+
+# Database
+db.url=jdbc:postgresql://localhost:5432/im_msg_db?currentSchema=im_msg
+
+# Wiremock
+wiremock.admin.url=http://localhost:8888/__admin
+
+# Selenium Grid url
+## for running UI tests in local browser (one selenide.remote_url is required)
+selenide.remote_url=
+
+# Debug mode (for visual UI tests)
+debug.mode=true

@@ -1,0 +1,30 @@
+keycloak:
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: 21.1
+    pullPolicy: IfNotPresent
+  httpPort: 8089
+  adminUser: admin
+  adminPassword: admin
+  databaseVendor: dev-mem
+  args:
+    ["start-dev", "--http-port=8089", "--import-realm"]
+
+service:
+  type: NodePort
+  nodePort: 30089
+
+deployment:
+  replicas: 1
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+
+ingress:
+  enabled: false
+
+
+config:
+  enabled: true
+  realmConfigFile: "config/pubsub-realm.json"

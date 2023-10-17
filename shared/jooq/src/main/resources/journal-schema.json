@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/table-journal.schema.json",
+  "title": "Table record journal",
+  "description": "Auditable journal of record changes",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "at": {
+        "type": "string",
+        "format": "date-time",
+        "description": "ISO 8601 formatted date-time string designating when a change event of the journaled object took place."
+      },
+      "by": {
+        "not": {
+          "type": ["object", "boolean"]
+        },
+        "description": "Name of the authorized person or system making the change event."
+      },
+      "action": {
+        "type": "string",
+        "enum": ["CREATED", "MODIFIED"],
+        "description": "Value designating which action, either creation of a new or modification of an existing record was undertaken."
+      }
+    },
+    "required": ["at", "by", "action"]
+  },
+  "minItems": 1
+}

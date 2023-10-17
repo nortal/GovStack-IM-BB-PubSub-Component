@@ -1,0 +1,3 @@
+api-generator/*
+!api-generator/openapi-definition.yaml
+!api-generator/openapitools.json

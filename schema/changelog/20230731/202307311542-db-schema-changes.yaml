@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202307311542-drop-unique-constraint-on-events
+      author: Stefan Cvetkovski
+      changes:
+        - dropUniqueConstraint:
+            tableName: events
+            constraintName: uq_events

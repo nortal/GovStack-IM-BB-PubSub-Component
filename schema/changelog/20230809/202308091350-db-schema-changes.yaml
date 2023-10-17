@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202308091350-modify-unique-constraint-on-managers
+      author: Stefan Cvetkovski
+      changes:
+        - dropUniqueConstraint:
+            tableName: managers
+            constraintName: uq_managers
+        - addUniqueConstraint:
+            tableName: managers
+            columnNames: >-
+              identifier,
+              deleted_at
+            constraintName: uq_managers
+
+  - changeSet:
+      id: 202308091700-drop-null-constraint-fk-rooms-manager-id
+      author: Stefan Cvetkovski
+      changes:
+        - dropNotNullConstraint:
+            tableName: rooms
+            columnName: manager_id
+            columnDataType: uuid

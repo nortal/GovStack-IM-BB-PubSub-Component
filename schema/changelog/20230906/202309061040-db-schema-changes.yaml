@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202309061040-alter-published-messages-drop-null-constraint-on-published-at
+      author: Stefan Cvetkovski
+      changes:
+        - dropNotNullConstraint:
+            tableName: published_messages
+            columnName: published_at
+            columnDataType: timestamptz

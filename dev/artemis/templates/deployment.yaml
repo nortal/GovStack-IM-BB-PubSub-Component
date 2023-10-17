@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: artemis
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: artemis
+  template:
+    metadata:
+      labels:
+        app: artemis
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- range .Values.service.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .port }}
+              protocol: TCP
+            {{- end }}
+          env:
+            - name: AMQ_USER
+              value: "admin"
+            - name: AMQ_PASSWORD
+              value: "admin"
+            - name: AMQ_QUEUES
+              value: "pubsub-push-events"
+            - name: AMQ_EXTRA_ARGS
+              value: "--host 0.0.0.0 --http-host 0.0.0.0 --relax-jolokia"
+            - name: LOG4J2_PROPERTIES
+              valueFrom:
+                configMapKeyRef:
+                  name: artemis-logging-config
+                  key: log4j2.properties
